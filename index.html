@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#0a0b0d] text-white select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAPSULA SPIN — Hyper-Engineered GMT+7 Kinetic Chronometer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            background-color: #0c0d10;
+        }
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom Scrollbar for Diagnostics Modal */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+        }
+        /* Glassmorphic UI Backdrop */
+        .glass-panel {
+            background: rgba(18, 20, 26, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        /* Subtle Glow Effects */
+        .active-ring {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+        .denied-shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        /* Laser Beam Pulse */
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .animate-pulse-fast {
+            animation: pulse-fast 1s infinite;
+        }
+    </style>
+</head>
+<body class="h-full w-full relative overflow-hidden flex flex-col justify-between p-6 sm:p-10">
+
+    <!-- 3D WebGL Canvas Layer -->
+    <div id="canvas-container" class="absolute inset-0 z-0 cursor-grab active:cursor-grabbing"></div>
+
+    <!-- TOP / LEFT OVERLAY HEADER -->
+    <header class="relative z-10 flex justify-between items-start w-full pointer-events-none">
+        <div class="pointer-events-auto">
+            <div class="text-xs tracking-widest text-zinc-500 uppercase font-medium mb-1 flex items-center gap-2">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse-fast"></span>
+                Press ↩ to Preview
+            </div>
+            <div class="mt-8 sm:mt-16">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-white flex items-center gap-3">
+                    <span class="font-normal">CAPSULA</span>
+                    <span class="font-extralight text-zinc-400">SPIN</span>
+                </h1>
+                <div class="text-[10px] tracking-[0.25em] text-zinc-500 uppercase mt-2 font-mono">
+                    CHRONO-CAPSULE MK-IV • GMT+7 WIB MASTER CLOCK
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Right Mobile Info Badge -->
+        <div class="pointer-events-auto md:hidden bg-zinc-900/80 px-3 py-1.5 rounded-full border border-zinc-800 text-[11px] font-mono text-zinc-400">
+            GMT+7 HARDLOCKED
+        </div>
+    </header>
+
+    <!-- REAL-TIME REJECTION TOAST MODAL -->
+    <div id="denial-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none opacity-0 scale-95 transition-all duration-300 w-[90%] max-w-md">
+        <div class="glass-panel p-5 rounded-2xl border border-red-500/30 shadow-2xl bg-zinc-950/90 text-left backdrop-blur-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></div>
+                    <span class="text-xs font-mono font-bold tracking-wider text-red-400 uppercase" id="denial-code">ERR_CUSTOMIZATION_DENIED</span>
+                </div>
+                <span class="text-[10px] font-mono text-zinc-500">SYSTEM OVERRIDE</span>
+            </div>
+            <p id="denial-message" class="text-xs text-zinc-300 font-mono mt-3 leading-relaxed">
+                Feature permanently disabled. GMT+7 Temporal Protocol standard forbids visual parameter modifications.
+            </p>
+            <div class="mt-4 pt-3 border-t border-zinc-800/60 flex justify-between items-center text-[10px] text-zinc-500 font-mono">
+                <span>REASON CODE: 0x8849-GMT7</span>
+                <span class="text-red-400 font-semibold">ENFORCEMENT ACTIVE</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR CONTROLS (PARODY OF HIGH-END SAAS / DESIGN TOOLS) -->
+    <div class="fixed right-6 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col gap-6 w-64 glass-panel p-6 rounded-3xl border border-white/10 shadow-2xl">
+        
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-2.5">
+            <button id="btn-preview" onclick="triggerDenial('PREVIEW', 'Preview mode loop detected. You are already looking at the ultimate live preview in 60 FPS WebGL.')" class="w-full py-2.5 px-4 bg-white hover:bg-zinc-200 text-black font-semibold text-xs rounded-full tracking-wider transition-all duration-200 active:scale-95 shadow-lg shadow-white/5 uppercase">
+                PREVIEW
+            </button>
+            <button id="btn-set-active" onclick="triggerDenial('SET AS ACTIVE', 'System already set as ACTIVE. Time is currently flowing at 1.00000s/s in Western Indonesia Time (WIB).')" class="w-full py-2.5 px-4 bg-transparent border border-white/30 hover:border-white text-white font-medium text-xs rounded-full tracking-wider transition-all duration-200 active:scale-95 uppercase">
+                SET AS ACTIVE
+            </button>
+        </div>
+
+        <!-- Size Selection -->
+        <div class="space-y-2">
+            <label class="text-[11px] font-medium text-zinc-400 tracking-wide uppercase block">Size</label>
+            <div class="flex items-center justify-between gap-1">
+                <button onclick="triggerDenial('SIZE: XS', 'Dimensional collapse risk! Shrinking capsule below M scale breaks GMT+7 surface tension.')" class="w-9 h-9 rounded-full border border-zinc-700/80 hover:border-zinc-500 text-zinc-400 text-xs font-mono flex items-center justify-center transition-all">XS</button>
+                <button onclick="triggerDenial('SIZE: S', 'Compact form factor locked. Standard M is strictly required by GMT+7 Timekeeping Ordinance.')" class="w-9 h-9 rounded-full border border-zinc-700/80 hover:border-zinc-500 text-zinc-400 text-xs font-mono flex items-center justify-center transition-all">S</button>
+                <button onclick="triggerDenial('SIZE: M', 'Capsule size is already M (Optimized). Changes locked by system administrator.')" class="w-9 h-9 rounded-full active-ring bg-white text-black font-semibold text-xs font-mono flex items-center justify-center transition-all">M</button>
+                <button onclick="triggerDenial('SIZE: L', 'Mass quota exceeded. L-size quartz glass capsule violates studio loading limits.')" class="w-9 h-9 rounded-full border border-zinc-700/80 hover:border-zinc-500 text-zinc-400 text-xs font-mono flex items-center justify-center transition-all">L</button>
+                <button onclick="triggerDenial('SIZE: XL', 'XL Capsule requires 1.21 Gigawatts of GPU rasterization power. Request rejected.')" class="w-9 h-9 rounded-full border border-zinc-700/80 hover:border-zinc-500 text-zinc-400 text-xs font-mono flex items-center justify-center transition-all">XL</button>
+            </div>
+        </div>
+
+        <!-- Scale Orientation -->
+        <div class="space-y-2">
+            <label class="text-[11px] font-medium text-zinc-400 tracking-wide uppercase block">Scale orientation</label>
+            <div class="flex items-center gap-3">
+                <button onclick="triggerDenial('ORIENTATION: HORIZONTAL', 'Capsule is already aligned horizontally along the GMT+7 equatorial plane.')" class="w-10 h-10 rounded-full active-ring bg-zinc-800 border border-zinc-600 flex items-center justify-center text-white transition-all">
+                    <!-- Horizontal Capsule Icon -->
+                    <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="18" rx="3" stroke-width="1.8"/></svg>
+                </button>
+                <button onclick="triggerDenial('ORIENTATION: VERTICAL', 'VERTICAL GRAVITY ERROR: Rotating capsule 90° will cause seconds digit drum to fall out.')" class="w-10 h-10 rounded-full border border-zinc-800 hover:border-zinc-600 flex items-center justify-center text-zinc-400 transition-all">
+                    <!-- Vertical Capsule Icon -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="18" rx="3" stroke-width="1.8"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Seconds Display Toggle -->
+        <div class="space-y-2">
+            <label class="text-[11px] font-medium text-zinc-400 tracking-wide uppercase block">Seconds</label>
+            <div class="flex items-center gap-3">
+                <button onclick="triggerDenial('SECONDS: ON', 'Seconds are already live-ticking at 1000ms intervals.')" class="w-10 h-10 rounded-full active-ring bg-zinc-800 border border-zinc-600 flex items-center justify-center text-white transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+                </button>
+                <button onclick="triggerDenial('SECONDS: DISABLE', 'TEMPORAL LAWS VIOLATION: You cannot disable seconds. Time marches continuously forward.')" class="w-10 h-10 rounded-full border border-zinc-800 hover:border-zinc-600 flex items-center justify-center text-zinc-400 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" stroke-width="2"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Digits Color Swatches -->
+        <div class="space-y-2">
+            <label class="text-[11px] font-medium text-zinc-400 tracking-wide uppercase block">Digits</label>
+            <div class="flex items-center gap-2.5">
+                <button onclick="triggerDenial('COLOR: WHITE', 'White monochromatic font index (6500K) is calibrated for peak human visual legibility.')" class="w-7 h-7 rounded-full bg-white active-ring transition-transform hover:scale-110"></button>
+                <button onclick="triggerDenial('COLOR: BLACK', 'Black text on black drums creates zero contrast paradox. Request rejected.')" class="w-7 h-7 rounded-full bg-black border border-zinc-700 transition-transform hover:scale-110"></button>
+                <button onclick="triggerDenial('COLOR: RED', 'Red digits reserved strictly for apocalyptic alarm scenarios.')" class="w-7 h-7 rounded-full bg-red-600 transition-transform hover:scale-110"></button>
+                <button onclick="triggerDenial('COLOR: GOLD', 'Gold luxury digits require Capsula Spin Pro Subscription ($999/mo).')" class="w-7 h-7 rounded-full bg-amber-500 transition-transform hover:scale-110"></button>
+                <button onclick="triggerDenial('COLOR: GREEN', 'Matrix green visual theme is deprecated as of Protocol 2026.')" class="w-7 h-7 rounded-full bg-emerald-500 transition-transform hover:scale-110"></button>
+                <button onclick="triggerDenial('COLOR: BLUE', 'Blue light digits induce circadian sleep disruption during WIB midnight hours.')" class="w-7 h-7 rounded-full bg-cyan-600 transition-transform hover:scale-110"></button>
+            </div>
+        </div>
+
+        <!-- Background Color -->
+        <div class="space-y-2">
+            <label class="text-[11px] font-medium text-zinc-400 tracking-wide uppercase block">Background</label>
+            <div class="flex items-center gap-2.5">
+                <button onclick="triggerDenial('BG: DARK', 'Dark matte studio environment is locked for aesthetic excellence.')" class="w-7 h-7 rounded-full bg-[#0c0d10] active-ring border border-zinc-700 transition-transform hover:scale-110"></button>
+                <button onclick="triggerDenial('BG: MID GREY', 'Mid-grey backdrop reduces ambient specular highlight quality by 42%.')" class="w-7 h-7 rounded-full bg-zinc-700 transition-transform hover:scale-110"></button>
+                <button onclick="triggerDenial('BG: LIGHT', 'Light mode burns retinas in dark rooms. Request safety blocked.')" class="w-7 h-7 rounded-full bg-zinc-200 transition-transform hover:scale-110"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER / DIAGNOSTICS LOG BAR -->
+    <footer class="relative z-10 w-full flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-zinc-900 text-xs font-mono text-zinc-500 pointer-events-auto">
+        <div class="flex items-center gap-4">
+            <span class="flex items-center gap-1.5 text-zinc-400">
+                <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                <span>ZONE: GMT+7 (WIB / JAKARTA-BANGKOK)</span>
+            </span>
+            <span class="hidden sm:inline text-zinc-800">|</span>
+            <span id="timestamp-digital" class="text-zinc-300 font-semibold">00:00:00.000</span>
+        </div>
+
+        <!-- Meme System Metrics -->
+        <div class="flex items-center gap-6 text-[11px]">
+            <div class="hidden lg:flex items-center gap-2">
+                <span class="text-zinc-600">GRAVITATIONAL SYNC:</span>
+                <span class="text-emerald-400 font-medium">99.9992%</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-zinc-600">USER CUSTOMIZATION FREEDOM:</span>
+                <span class="text-red-400 font-bold">0.00%</span>
+            </div>
+            <button onclick="toggleDiagnosticsModal()" class="px-3 py-1 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 transition-colors">
+                DIAGNOSTICS
+            </button>
+        </div>
+    </footer>
+
+    <!-- DIAGNOSTICS POPUP DRAWER -->
+    <div id="diagnostics-drawer" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-xl p-6 rounded-3xl border border-zinc-800 text-left space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
+                <h3 class="text-sm font-mono font-bold text-white flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                    SYSTEM TELEMETRY & HARDWARE LOCK STATUS
+                </h3>
+                <button onclick="toggleDiagnosticsModal()" class="text-zinc-500 hover:text-white font-mono text-sm">✕ ESC</button>
+            </div>
+            <div class="space-y-3 font-mono text-xs text-zinc-400 max-h-80 overflow-y-auto pr-2">
+                <div class="p-2.5 bg-zinc-950/60 rounded-xl border border-zinc-900 space-y-1">
+                    <div class="text-zinc-300 font-semibold">Capsula Spin Architecture Specification</div>
+                    <p class="text-zinc-500 text-[11px]">Model: Kinetic Drum Master Clock (Rev 4.9)</p>
+                    <p class="text-zinc-500 text-[11px]">Timezone Constraint: Locked to UTC+7 (WIB Zone)</p>
+                    <p class="text-zinc-500 text-[11px]">Customization Kernel: Hardcoded READ-ONLY memory</p>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between"><span>3D Drum Engine Rendering:</span><span class="text-emerald-400">WebGL 2.0 (ACES Filmic)</span></div>
+                    <div class="flex justify-between"><span>Physical Refraction IOR:</span><span class="text-zinc-200">1.52 (High-Purity Quartz Glass)</span></div>
+                    <div class="flex justify-between"><span>Sub-Atomic Time Drift:</span><span class="text-zinc-200">+0.000000001s / century</span></div>
+                    <div class="flex justify-between"><span>User Option Rejection Rate:</span><span class="text-red-400">100.00%</span></div>
+                </div>
+                <div class="p-3 bg-red-950/30 border border-red-900/40 rounded-xl text-red-300 text-[11px] leading-relaxed">
+                    <strong>NOTICE TO USER:</strong> All buttons on this website are decorative. Attempts to adjust size, digit color, rotation, or seconds display are routed to the central Null void. Please enjoy the absolute perfection of uncustomizable time.
+                </div>
+            </div>
+            <div class="pt-2 flex justify-end">
+                <button onclick="toggleDiagnosticsModal()" class="px-5 py-2 bg-white text-black font-semibold text-xs rounded-full uppercase">
+                    Acknowledge & Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Web Audio API Sound Effects Synthesizer (No external sound files required)
+        class ChronoAudioEngine {
+            constructor() {
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+            }
+
+            playDenialBeep() {
+                this.init();
+                if (!this.ctx) return;
+
+                const now = this.ctx.currentTime;
+                // Dual tone disharmony for "Access Denied" error
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc1.type = 'sawtooth';
+                osc2.type = 'square';
+
+                osc1.frequency.setValueAtTime(180, now);
+                osc2.frequency.setValueAtTime(185, now);
+
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.3);
+                osc2.stop(now + 0.3);
+            }
+
+            playGlassClick() {
+                this.init();
+                if (!this.ctx) return;
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(2200, now);
+                osc.frequency.exponentialRampToValueAtTime(400, now + 0.08);
+
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.08);
+            }
+        }
+
+        const audio = new ChronoAudioEngine();
+
+        function triggerDenial(code, message) {
+            audio.playDenialBeep();
+            
+            const modal = document.getElementById('denial-modal');
+            const codeEl = document.getElementById('denial-code');
+            const msgEl = document.getElementById('denial-message');
+
+            codeEl.innerText = code;
+            msgEl.innerText = message;
+
+            modal.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+            modal.classList.add('opacity-100', 'scale-100', 'denied-shake');
+
+            setTimeout(() => {
+                modal.classList.remove('denied-shake');
+            }, 400);
+
+            clearTimeout(window.denialTimer);
+            window.denialTimer = setTimeout(() => {
+                modal.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                modal.classList.remove('opacity-100', 'scale-100');
+            }, 3200);
+        }
+
+        function toggleDiagnosticsModal() {
+            audio.playGlassClick();
+            const drawer = document.getElementById('diagnostics-drawer');
+            drawer.classList.toggle('hidden');
+        }
+    </script>
+
+    <script>
+        let scene, camera, renderer;
+        let capsuleGroup, hourDrum, minuteDrum, secondDrum;
+        let targetRotH = 0, targetRotM = 0, targetRotS = 0;
+        let currentRotH = 0, currentRotM = 0, currentRotS = 0;
+
+        // Interactive mouse parallax variables
+        let mouseX = 0, mouseY = 0;
+        let targetCameraRotX = 0, targetCameraRotY = 0;
+        let isMouseDown = false, previousMouseX = 0, previousMouseY = 0;
+
+        /* Helper to create dynamic drum digit textures */
+        function createDrumTexture(count, labelPrefix = "") {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 4096;
+            const ctx = canvas.getContext('2d');
+
+            // Drum base background - Off-white matte metallic finish
+            ctx.fillStyle = '#eaeaea';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const slotHeight = canvas.height / count;
+
+            for (let i = 0; i < count; i++) {
+                const y = i * slotHeight;
+
+                // Subtle dividing horizontal tick mark lines
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(30, y);
+                ctx.lineTo(482, y);
+                ctx.stroke();
+
+                // Main Digit Text
+                const numStr = i < 10 ? '0' + i : '' + i;
+                ctx.fillStyle = '#111111';
+                ctx.font = '700 210px "Inter", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(numStr, canvas.width / 2, y + slotHeight / 2);
+
+                // Secondary subtle sub-ticks along the edge
+                ctx.fillStyle = '#888888';
+                ctx.fillRect(40, y + slotHeight * 0.25, 20, 2);
+                ctx.fillRect(40, y + slotHeight * 0.75, 20, 2);
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.anisotropy = 16;
+            return texture;
+        }
+
+        function init3D() {
+            const container = document.getElementById('canvas-container');
+
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0c0d10, 0.035);
+
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 0, 7.8);
+
+            // WebGL Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.25;
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            // Lighting System for High-End Studio Reflections
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+            scene.add(ambientLight);
+
+            // Key Light (Specular Highlights on Glass Curve)
+            const keyLight = new THREE.SpotLight(0xffffff, 5.0);
+            keyLight.position.set(5, 8, 6);
+            keyLight.angle = 0.6;
+            keyLight.penumbra = 0.8;
+            keyLight.castShadow = true;
+            scene.add(keyLight);
+
+            // Warm Rim Light
+            const rimLight = new THREE.DirectionalLight(0xffecd6, 2.5);
+            rimLight.position.set(-6, -2, -4);
+            scene.add(rimLight);
+
+            // Cool Top Light
+            const topLight = new THREE.DirectionalLight(0xdbeafe, 2.0);
+            topLight.position.set(0, 10, 2);
+            scene.add(topLight);
+
+            // Studio Ground Floor Plane with Soft Shadow
+            const shadowPlaneGeo = new THREE.PlaneGeometry(30, 30);
+            const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+            const shadowPlane = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat);
+            shadowPlane.rotation.x = -Math.PI / 2;
+            shadowPlane.position.y = -2.2;
+            shadowPlane.receiveShadow = true;
+            scene.add(shadowPlane);
+
+            // Master Capsule Container
+            capsuleGroup = new THREE.Group();
+            scene.add(capsuleGroup);
+
+            // ==========================================
+            // 1. OUTER GLASS CAPSULE SHELL
+            // ==========================================
+            const capsuleRadius = 1.25;
+            const capsuleLength = 3.6;
+
+            const glassGeo = new THREE.CapsuleGeometry(capsuleRadius, capsuleLength, 32, 64);
+            glassGeo.rotateZ(Math.PI / 2); // Orient horizontally
+
+            const glassMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.38,
+                roughness: 0.04,
+                metalness: 0.05,
+                transmission: 0.96, // Glass transparency
+                ior: 1.52,          // Index of refraction for quartz glass
+                thickness: 0.85,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.05,
+                reflectivity: 0.9,
+                specularIntensity: 1.0
+            });
+
+            const glassCapsule = new THREE.Mesh(glassGeo, glassMat);
+            glassCapsule.castShadow = true;
+            capsuleGroup.add(glassCapsule);
+
+            // Inner Chrome Center Ring Seam
+            const centerRingGeo = new THREE.TorusGeometry(capsuleRadius - 0.02, 0.02, 16, 100);
+            const chromeMat = new THREE.MeshStandardMaterial({
+                color: 0xcccccc,
+                metalness: 0.95,
+                roughness: 0.15
+            });
+            const centerRing = new THREE.Mesh(centerRingGeo, chromeMat);
+            centerRing.rotation.y = Math.PI / 2;
+            capsuleGroup.add(centerRing);
+
+            // Inner Metal End Caps
+            const endCapLeftGeo = new THREE.CylinderGeometry(1.22, 1.22, 0.08, 32);
+            const endCapLeft = new THREE.Mesh(endCapLeftGeo, chromeMat);
+            endCapLeft.rotation.z = Math.PI / 2;
+            endCapLeft.position.x = -capsuleLength / 2 - 0.02;
+            capsuleGroup.add(endCapLeft);
+
+            const endCapRight = endCapLeft.clone();
+            endCapRight.position.x = capsuleLength / 2 + 0.02;
+            capsuleGroup.add(endCapRight);
+
+            // ==========================================
+            // 2. INNER ROTATING DRUMS (HOURS, MINUTES, SECONDS)
+            // ==========================================
+            const drumRadius = 1.10;
+            const drumHeight = 1.35;
+
+            // Hour Drum (24 Hours)
+            const hoursTex = createDrumTexture(24);
+            const hourGeo = new THREE.CylinderGeometry(drumRadius, drumRadius, drumHeight, 64, 1, true);
+            const hourMat = new THREE.MeshStandardMaterial({
+                map: hoursTex,
+                roughness: 0.35,
+                metalness: 0.1
+            });
+            hourDrum = new THREE.Mesh(hourGeo, hourMat);
+            hourDrum.rotation.z = Math.PI / 2; // Axis aligned along X
+            hourDrum.position.x = -0.85;
+            capsuleGroup.add(hourDrum);
+
+            // Minute Drum (60 Minutes)
+            const minutesTex = createDrumTexture(60);
+            const minGeo = new THREE.CylinderGeometry(drumRadius, drumRadius, drumHeight, 64, 1, true);
+            const minMat = new THREE.MeshStandardMaterial({
+                map: minutesTex,
+                roughness: 0.35,
+                metalness: 0.1
+            });
+            minuteDrum = new THREE.Mesh(minGeo, minMat);
+            minuteDrum.rotation.z = Math.PI / 2;
+            minuteDrum.position.x = 0.85;
+            capsuleGroup.add(minuteDrum);
+
+            // Seconds Drum (Smaller Drum / Stacked offset)
+            const secondsTex = createDrumTexture(60);
+            const secGeo = new THREE.CylinderGeometry(drumRadius * 0.96, drumRadius * 0.96, drumHeight * 0.65, 64, 1, true);
+            const secMat = new THREE.MeshStandardMaterial({
+                map: secondsTex,
+                roughness: 0.35,
+                metalness: 0.1
+            });
+            secondDrum = new THREE.Mesh(secGeo, secMat);
+            secondDrum.rotation.z = Math.PI / 2;
+            secondDrum.position.x = 2.15; // Placed at right end of capsule
+            capsuleGroup.add(secondDrum);
+
+            // ==========================================
+            // 3. INNER BRAND PLATE ("Capsula" Logo Text)
+            // ==========================================
+            const badgeCanvas = document.createElement('canvas');
+            badgeCanvas.width = 256;
+            badgeCanvas.height = 128;
+            const bCtx = badgeCanvas.getContext('2d');
+            bCtx.fillStyle = 'transparent';
+            bCtx.clearRect(0,0,256,128);
+            bCtx.fillStyle = '#222222';
+            bCtx.font = 'italic 500 48px Georgia, serif';
+            bCtx.textAlign = 'center';
+            bCtx.textBaseline = 'middle';
+            bCtx.fillText('Capsula', 128, 64);
+
+            const badgeTex = new THREE.CanvasTexture(badgeCanvas);
+            const badgeGeo = new THREE.PlaneGeometry(0.8, 0.4);
+            const badgeMat = new THREE.MeshBasicMaterial({ map: badgeTex, transparent: true, opacity: 0.85 });
+            const badgeMesh = new THREE.Mesh(badgeGeo, badgeMat);
+            badgeMesh.position.set(-2.15, 0, 0.05);
+            badgeMesh.rotation.y = 0;
+            capsuleGroup.add(badgeMesh);
+
+            // Window Resize Handler
+            window.addEventListener('resize', onWindowResize);
+
+            // Mouse Interaction Handlers for Parallax & Tap
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mouseup', () => isMouseDown = false);
+            
+            // Touch handlers
+            window.addEventListener('touchmove', onTouchMove, { passive: true });
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(e) {
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            if (isMouseDown) {
+                const deltaX = e.clientX - previousMouseX;
+                const deltaY = e.clientY - previousMouseY;
+
+                capsuleGroup.rotation.y += deltaX * 0.005;
+                capsuleGroup.rotation.x += deltaY * 0.005;
+            }
+
+            previousMouseX = e.clientX;
+            previousMouseY = e.clientY;
+        }
+
+        function onTouchMove(e) {
+            if (e.touches.length > 0) {
+                mouseX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+            }
+        }
+
+        function onMouseDown(e) {
+            // Trigger tap reaction if clicking capsule canvas
+            if (e.target.tagName.toLowerCase() === 'canvas') {
+                isMouseDown = true;
+                previousMouseX = e.clientX;
+                previousMouseY = e.clientY;
+
+                audio.playGlassClick();
+                triggerDenial('GLASS TOUCH DETECTED', 'Outer quartz capsule shell deflected 0.0002nm. Please refrain from tapping the precision chronometer.');
+            }
+        }
+
+        function updateTime() {
+            // Compute real GMT+7 time regardless of client's local computer clock timezone setting
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const gmt7 = new Date(utc + (3600000 * 7)); // GMT+7 offset
+
+            const hours = gmt7.getHours();
+            const minutes = gmt7.getMinutes();
+            const seconds = gmt7.getSeconds();
+            const milliseconds = gmt7.getMilliseconds();
+
+            // Update digital clock footer timestamp display
+            const hh = String(hours).padStart(2, '0');
+            const mm = String(minutes).padStart(2, '0');
+            const ss = String(seconds).padStart(2, '0');
+            const mss = String(milliseconds).padStart(3, '0');
+            document.getElementById('timestamp-digital').innerText = `${hh} : ${mm} : ${ss}.${mss} GMT+7`;
+
+            // Continuous rotational target calculation
+            // Rotation is around cylinder's central Y-axis (which is rotated along X axis of world)
+            const targetH = (hours / 24) * Math.PI * 2 + (minutes / (24 * 60)) * Math.PI * 2;
+            const targetM = (minutes / 60) * Math.PI * 2 + (seconds / (60 * 60)) * Math.PI * 2;
+            const targetS = (seconds / 60) * Math.PI * 2 + (milliseconds / (60 * 1000)) * Math.PI * 2;
+
+            // Smooth Interpolation physics (LERP)
+            currentRotH += (targetH - currentRotH) * 0.1;
+            currentRotM += (targetM - currentRotM) * 0.1;
+            currentRotS += (targetS - currentRotS) * 0.15;
+
+            if (hourDrum) hourDrum.rotation.y = currentRotH;
+            if (minuteDrum) minuteDrum.rotation.y = currentRotM;
+            if (secondDrum) secondDrum.rotation.y = currentRotS;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            updateTime();
+
+            // Parallax subtle float physics
+            if (!isMouseDown) {
+                targetCameraRotY = mouseX * 0.15;
+                targetCameraRotX = mouseY * 0.12;
+
+                capsuleGroup.rotation.y += (targetCameraRotY - capsuleGroup.rotation.y) * 0.05;
+                capsuleGroup.rotation.x += (targetCameraRotX - capsuleGroup.rotation.x) * 0.05;
+
+                // Subtle floating wave animation
+                capsuleGroup.position.y = Math.sin(Date.now() * 0.0015) * 0.08;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Start 3D environment on window load
+        window.onload = function() {
+            init3D();
+            animate();
+        };
+    </script>
+</body>
+</html>
