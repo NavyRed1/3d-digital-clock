@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#0a0b0d] text-white select-none">
+<html lang="en" class="h-full text-white select-none">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +8,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             overflow: hidden;
-            background-color: #0c0d10;
+            background: radial-gradient(circle at 42% 50%, #161820 0%, #0c0d10 68%, #050607 100%);
         }
         .mono-font {
             font-family: 'JetBrains Mono', monospace;
@@ -29,16 +29,15 @@
             background: rgba(255, 255, 255, 0.15);
             border-radius: 2px;
         }
-        /* Glassmorphic UI Backdrop */
+        /* Glassmorphic UI Panels */
         .glass-panel {
-            background: rgba(18, 20, 26, 0.45);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(18, 20, 26, 0.55);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        /* Subtle Glow Effects */
         .active-ring {
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 15px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 18px rgba(255, 255, 255, 0.25);
         }
         .denied-shake {
             animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
@@ -49,13 +48,12 @@
             30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
-        /* Laser Beam Pulse */
         @keyframes pulse-fast {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
         .animate-pulse-fast {
-            animation: pulse-fast 1s infinite;
+            animation: pulse-fast 1.2s infinite;
         }
     </style>
 </head>
@@ -67,11 +65,11 @@
     <!-- TOP / LEFT OVERLAY HEADER -->
     <header class="relative z-10 flex justify-between items-start w-full pointer-events-none">
         <div class="pointer-events-auto">
-            <div class="text-xs tracking-widest text-zinc-500 uppercase font-medium mb-1 flex items-center gap-2">
-                <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse-fast"></span>
+            <div class="text-[11px] tracking-widest text-zinc-400 uppercase font-mono mb-1 flex items-center gap-2">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse-fast"></span>
                 Press ↩ to Preview
             </div>
-            <div class="mt-8 sm:mt-16">
+            <div class="mt-6 sm:mt-12">
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-white flex items-center gap-3">
                     <span class="font-normal">CAPSULA</span>
                     <span class="font-extralight text-zinc-400">SPIN</span>
@@ -83,7 +81,7 @@
         </div>
 
         <!-- Top Right Mobile Info Badge -->
-        <div class="pointer-events-auto md:hidden bg-zinc-900/80 px-3 py-1.5 rounded-full border border-zinc-800 text-[11px] font-mono text-zinc-400">
+        <div class="pointer-events-auto md:hidden bg-zinc-900/80 px-3.5 py-1.5 rounded-full border border-zinc-800 text-[11px] font-mono text-zinc-300 shadow-lg">
             GMT+7 HARDLOCKED
         </div>
     </header>
@@ -108,12 +106,12 @@
         </div>
     </div>
 
-    <!-- RIGHT SIDEBAR CONTROLS (PARODY OF HIGH-END SAAS / DESIGN TOOLS) -->
-    <div class="fixed right-6 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col gap-6 w-64 glass-panel p-6 rounded-3xl border border-white/10 shadow-2xl">
+    <!-- RIGHT SIDEBAR CONTROLS (PARODY OF HIGH-END DESIGN TOOLS) -->
+    <div class="fixed right-6 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col gap-5 w-64 glass-panel p-6 rounded-3xl border border-white/10 shadow-2xl">
         
         <!-- Action Buttons -->
         <div class="flex flex-col gap-2.5">
-            <button id="btn-preview" onclick="triggerDenial('PREVIEW', 'Preview mode loop detected. You are already looking at the ultimate live preview in 60 FPS WebGL.')" class="w-full py-2.5 px-4 bg-white hover:bg-zinc-200 text-black font-semibold text-xs rounded-full tracking-wider transition-all duration-200 active:scale-95 shadow-lg shadow-white/5 uppercase">
+            <button id="btn-preview" onclick="triggerDenial('PREVIEW', 'Preview mode loop detected. You are already looking at the live 60 FPS WebGL kinetic chronometer.')" class="w-full py-2.5 px-4 bg-white hover:bg-zinc-200 text-black font-semibold text-xs rounded-full tracking-wider transition-all duration-200 active:scale-95 shadow-lg shadow-white/5 uppercase">
                 PREVIEW
             </button>
             <button id="btn-set-active" onclick="triggerDenial('SET AS ACTIVE', 'System already set as ACTIVE. Time is currently flowing at 1.00000s/s in Western Indonesia Time (WIB).')" class="w-full py-2.5 px-4 bg-transparent border border-white/30 hover:border-white text-white font-medium text-xs rounded-full tracking-wider transition-all duration-200 active:scale-95 uppercase">
@@ -138,11 +136,9 @@
             <label class="text-[11px] font-medium text-zinc-400 tracking-wide uppercase block">Scale orientation</label>
             <div class="flex items-center gap-3">
                 <button onclick="triggerDenial('ORIENTATION: HORIZONTAL', 'Capsule is already aligned horizontally along the GMT+7 equatorial plane.')" class="w-10 h-10 rounded-full active-ring bg-zinc-800 border border-zinc-600 flex items-center justify-center text-white transition-all">
-                    <!-- Horizontal Capsule Icon -->
                     <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="18" rx="3" stroke-width="1.8"/></svg>
                 </button>
                 <button onclick="triggerDenial('ORIENTATION: VERTICAL', 'VERTICAL GRAVITY ERROR: Rotating capsule 90° will cause seconds digit drum to fall out.')" class="w-10 h-10 rounded-full border border-zinc-800 hover:border-zinc-600 flex items-center justify-center text-zinc-400 transition-all">
-                    <!-- Vertical Capsule Icon -->
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="18" rx="3" stroke-width="1.8"/></svg>
                 </button>
             </div>
@@ -188,25 +184,25 @@
     <!-- FOOTER / DIAGNOSTICS LOG BAR -->
     <footer class="relative z-10 w-full flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-zinc-900 text-xs font-mono text-zinc-500 pointer-events-auto">
         <div class="flex items-center gap-4">
-            <span class="flex items-center gap-1.5 text-zinc-400">
-                <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
-                <span>ZONE: GMT+7 (WIB / JAKARTA-BANGKOK)</span>
+            <span class="flex items-center gap-1.5 text-zinc-300">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <span>ZONE: GMT+7 (WIB / JAKARTA)</span>
             </span>
             <span class="hidden sm:inline text-zinc-800">|</span>
-            <span id="timestamp-digital" class="text-zinc-300 font-semibold">00:00:00.000</span>
+            <span id="timestamp-digital" class="text-zinc-200 font-semibold text-sm tracking-widest">00 : 00 : 00.000 GMT+7</span>
         </div>
 
-        <!-- Meme System Metrics -->
+        <!-- System Metrics -->
         <div class="flex items-center gap-6 text-[11px]">
             <div class="hidden lg:flex items-center gap-2">
                 <span class="text-zinc-600">GRAVITATIONAL SYNC:</span>
                 <span class="text-emerald-400 font-medium">99.9992%</span>
             </div>
             <div class="flex items-center gap-2">
-                <span class="text-zinc-600">USER CUSTOMIZATION FREEDOM:</span>
+                <span class="text-zinc-600">CUSTOMIZATION FREEDOM:</span>
                 <span class="text-red-400 font-bold">0.00%</span>
             </div>
-            <button onclick="toggleDiagnosticsModal()" class="px-3 py-1 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 transition-colors">
+            <button onclick="toggleDiagnosticsModal()" class="px-3.5 py-1.5 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 transition-colors">
                 DIAGNOSTICS
             </button>
         </div>
@@ -223,16 +219,16 @@
                 <button onclick="toggleDiagnosticsModal()" class="text-zinc-500 hover:text-white font-mono text-sm">✕ ESC</button>
             </div>
             <div class="space-y-3 font-mono text-xs text-zinc-400 max-h-80 overflow-y-auto pr-2">
-                <div class="p-2.5 bg-zinc-950/60 rounded-xl border border-zinc-900 space-y-1">
+                <div class="p-3 bg-zinc-950/60 rounded-xl border border-zinc-900 space-y-1">
                     <div class="text-zinc-300 font-semibold">Capsula Spin Architecture Specification</div>
-                    <p class="text-zinc-500 text-[11px]">Model: Kinetic Drum Master Clock (Rev 4.9)</p>
+                    <p class="text-zinc-500 text-[11px]">Model: Kinetic Drum Master Clock (Rev 5.0 Precision UV)</p>
                     <p class="text-zinc-500 text-[11px]">Timezone Constraint: Locked to UTC+7 (WIB Zone)</p>
                     <p class="text-zinc-500 text-[11px]">Customization Kernel: Hardcoded READ-ONLY memory</p>
                 </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between"><span>3D Drum Engine Rendering:</span><span class="text-emerald-400">WebGL 2.0 (ACES Filmic)</span></div>
-                    <div class="flex justify-between"><span>Physical Refraction IOR:</span><span class="text-zinc-200">1.52 (High-Purity Quartz Glass)</span></div>
-                    <div class="flex justify-between"><span>Sub-Atomic Time Drift:</span><span class="text-zinc-200">+0.000000001s / century</span></div>
+                    <div class="flex justify-between"><span>3D Drum Engine Rendering:</span><span class="text-emerald-400">WebGL 2.0 (Physical Glass Refraction)</span></div>
+                    <div class="flex justify-between"><span>Physical Refraction IOR:</span><span class="text-zinc-200">1.48 (High-Purity Quartz Shell)</span></div>
+                    <div class="flex justify-between"><span>Drum Mapping Alignment:</span><span class="text-zinc-200">1024x4096 Upright UV Axis</span></div>
                     <div class="flex justify-between"><span>User Option Rejection Rate:</span><span class="text-red-400">100.00%</span></div>
                 </div>
                 <div class="p-3 bg-red-950/30 border border-red-900/40 rounded-xl text-red-300 text-[11px] leading-relaxed">
@@ -247,8 +243,8 @@
         </div>
     </div>
 
+    <!-- AUDIO CONTROLLER -->
     <script>
-        // Web Audio API Sound Effects Synthesizer (No external sound files required)
         class ChronoAudioEngine {
             constructor() {
                 this.ctx = null;
@@ -266,7 +262,6 @@
                 if (!this.ctx) return;
 
                 const now = this.ctx.currentTime;
-                // Dual tone disharmony for "Access Denied" error
                 const osc1 = this.ctx.createOscillator();
                 const osc2 = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
@@ -346,74 +341,130 @@
         }
     </script>
 
+    <!-- 3D WEBGL GRAPHICS SYSTEM -->
     <script>
         let scene, camera, renderer;
         let capsuleGroup, hourDrum, minuteDrum, secondDrum;
-        let targetRotH = 0, targetRotM = 0, targetRotS = 0;
         let currentRotH = 0, currentRotM = 0, currentRotS = 0;
 
-        // Interactive mouse parallax variables
         let mouseX = 0, mouseY = 0;
         let targetCameraRotX = 0, targetCameraRotY = 0;
         let isMouseDown = false, previousMouseX = 0, previousMouseY = 0;
 
-        /* Helper to create dynamic drum digit textures */
-        function createDrumTexture(count, labelPrefix = "") {
+        function createDrumTexture(count) {
             const canvas = document.createElement('canvas');
-            canvas.width = 512;
+            canvas.width = 1024;
             canvas.height = 4096;
             const ctx = canvas.getContext('2d');
 
-            // Drum base background - Off-white matte metallic finish
-            ctx.fillStyle = '#eaeaea';
+            // Bright matte drum reel surface for maximum contrast
+            ctx.fillStyle = '#e8ecef';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const slotHeight = canvas.height / count;
+            const bandHeight = canvas.height / count;
+            // Scale font size to occupy ~78% of the available drum slot height
+            const fontSize = Math.floor(bandHeight * 0.78);
 
             for (let i = 0; i < count; i++) {
-                const y = i * slotHeight;
+                const yTop = i * bandHeight;
+                const yCenter = yTop + bandHeight / 2;
 
-                // Subtle dividing horizontal tick mark lines
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+                // Subtle slot separator tick lines
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.09)';
                 ctx.lineWidth = 4;
                 ctx.beginPath();
-                ctx.moveTo(30, y);
-                ctx.lineTo(482, y);
+                ctx.moveTo(0, yTop);
+                ctx.lineTo(canvas.width, yTop);
                 ctx.stroke();
 
-                // Main Digit Text
-                const numStr = i < 10 ? '0' + i : '' + i;
-                ctx.fillStyle = '#111111';
-                ctx.font = '700 210px "Inter", sans-serif';
+                // Draw bold, near-black, highly legible digit
+                const numStr = String(i).padStart(2, '0');
+                ctx.fillStyle = '#050505';
+                ctx.font = `900 ${fontSize}px "JetBrains Mono", "Inter", sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(numStr, canvas.width / 2, y + slotHeight / 2);
-
-                // Secondary subtle sub-ticks along the edge
-                ctx.fillStyle = '#888888';
-                ctx.fillRect(40, y + slotHeight * 0.25, 20, 2);
-                ctx.fillRect(40, y + slotHeight * 0.75, 20, 2);
+                ctx.fillText(numStr, canvas.width / 2, yCenter);
             }
 
             const texture = new THREE.CanvasTexture(canvas);
-            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapS = THREE.ClampToEdgeWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             texture.anisotropy = 16;
+            texture.minFilter = THREE.LinearMipmapLinearFilter;
             return texture;
+        }
+
+        function fixCylinderUVs(geometry) {
+            const uvs = geometry.attributes.uv;
+            for (let i = 0; i < uvs.count; i++) {
+                const u = uvs.getX(i); // Circumference theta (0..1)
+                const v = uvs.getY(i); // Cylinder height (-length/2..+length/2 mapped 0..1)
+
+                // Map drum length along X to texture X (U)
+                // Map drum circumference around X to texture Y (V)
+                const uNew = v;
+                const vNew = 1.0 - u;
+
+                uvs.setXY(i, uNew, vNew);
+            }
+            uvs.needsUpdate = true;
+        }
+
+        function createCapsuleGeometry(radius, length, capSegments = 32, radialSegments = 64) {
+            const points = [];
+            const halfLength = length / 2;
+
+            // Bottom cap (hemisphere)
+            for (let i = 0; i <= capSegments; i++) {
+                const phi = -Math.PI / 2 + (i / capSegments) * (Math.PI / 2);
+                points.push(new THREE.Vector2(radius * Math.cos(phi), -halfLength + radius * Math.sin(phi)));
+            }
+
+            // Top cap (hemisphere)
+            for (let i = 0; i <= capSegments; i++) {
+                const phi = (i / capSegments) * (Math.PI / 2);
+                points.push(new THREE.Vector2(radius * Math.cos(phi), halfLength + radius * Math.sin(phi)));
+            }
+
+            const geometry = new THREE.LatheGeometry(points, radialSegments);
+            geometry.rotateZ(Math.PI / 2); // Lay capsule horizontally along X axis
+            return geometry;
+        }
+
+        function createRollingDrum(count, radius, width, xPosition) {
+            const geometry = new THREE.CylinderGeometry(radius, radius, width, 128, 1, true);
+            geometry.rotateZ(-Math.PI / 2);
+            fixCylinderUVs(geometry);
+
+            const texture = createDrumTexture(count);
+            const material = new THREE.MeshStandardMaterial({
+                map: texture,
+                roughness: 0.28,
+                metalness: 0.08
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.x = xPosition;
+            mesh.renderOrder = 2;
+            return mesh;
+        }
+
+        function shortestAngleDifference(target, current) {
+            return Math.atan2(
+                Math.sin(target - current),
+                Math.cos(target - current)
+            );
         }
 
         function init3D() {
             const container = document.getElementById('canvas-container');
 
-            // Scene setup
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x0c0d10, 0.035);
+            scene.fog = new THREE.FogExp2(0x0c0d10, 0.032);
 
-            // Camera setup
-            camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, 0, 7.8);
+            camera = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 0, 7.3);
 
-            // WebGL Renderer
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -423,168 +474,190 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(renderer.domElement);
 
-            // Lighting System for High-End Studio Reflections
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+            // Lighting setup - Enhanced key & rim lights for edge specular reflections
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
             scene.add(ambientLight);
 
-            // Key Light (Specular Highlights on Glass Curve)
-            const keyLight = new THREE.SpotLight(0xffffff, 5.0);
-            keyLight.position.set(5, 8, 6);
-            keyLight.angle = 0.6;
+            const keyLight = new THREE.SpotLight(0xffffff, 4.5);
+            keyLight.position.set(5, 7, 7);
+            keyLight.angle = 0.55;
             keyLight.penumbra = 0.8;
             keyLight.castShadow = true;
             scene.add(keyLight);
 
-            // Warm Rim Light
-            const rimLight = new THREE.DirectionalLight(0xffecd6, 2.5);
-            rimLight.position.set(-6, -2, -4);
-            scene.add(rimLight);
+            const fillLight = new THREE.DirectionalLight(0xcfd8dc, 1.4);
+            fillLight.position.set(-5, -2, 3);
+            scene.add(fillLight);
 
-            // Cool Top Light
-            const topLight = new THREE.DirectionalLight(0xdbeafe, 2.0);
-            topLight.position.set(0, 10, 2);
+            const topLight = new THREE.DirectionalLight(0xffffff, 2.8);
+            topLight.position.set(0, 7, 1);
             scene.add(topLight);
 
-            // Studio Ground Floor Plane with Soft Shadow
+            const rimLight = new THREE.DirectionalLight(0xb0bec5, 2.2);
+            rimLight.position.set(0, -2, -6);
+            scene.add(rimLight);
+
+            // Ground Shadow Receiver
             const shadowPlaneGeo = new THREE.PlaneGeometry(30, 30);
-            const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+            const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.32 });
             const shadowPlane = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat);
             shadowPlane.rotation.x = -Math.PI / 2;
-            shadowPlane.position.y = -2.2;
+            shadowPlane.position.y = -1.8;
             shadowPlane.receiveShadow = true;
             scene.add(shadowPlane);
 
-            // Master Capsule Container
             capsuleGroup = new THREE.Group();
+            capsuleGroup.position.x = -0.35; // Position slightly left to balance UI controls
             scene.add(capsuleGroup);
 
-            // ==========================================
-            // 1. OUTER GLASS CAPSULE SHELL
-            // ==========================================
-            const capsuleRadius = 1.25;
-            const capsuleLength = 3.6;
-
-            const glassGeo = new THREE.CapsuleGeometry(capsuleRadius, capsuleLength, 32, 64);
-            glassGeo.rotateZ(Math.PI / 2); // Orient horizontally
-
-            const glassMat = new THREE.MeshPhysicalMaterial({
-                color: 0xffffff,
-                transparent: true,
-                opacity: 0.38,
-                roughness: 0.04,
-                metalness: 0.05,
-                transmission: 0.96, // Glass transparency
-                ior: 1.52,          // Index of refraction for quartz glass
-                thickness: 0.85,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.05,
-                reflectivity: 0.9,
-                specularIntensity: 1.0
-            });
-
-            const glassCapsule = new THREE.Mesh(glassGeo, glassMat);
-            glassCapsule.castShadow = true;
-            capsuleGroup.add(glassCapsule);
-
-            // Inner Chrome Center Ring Seam
-            const centerRingGeo = new THREE.TorusGeometry(capsuleRadius - 0.02, 0.02, 16, 100);
-            const chromeMat = new THREE.MeshStandardMaterial({
-                color: 0xcccccc,
-                metalness: 0.95,
-                roughness: 0.15
-            });
-            const centerRing = new THREE.Mesh(centerRingGeo, chromeMat);
-            centerRing.rotation.y = Math.PI / 2;
-            capsuleGroup.add(centerRing);
-
-            // Inner Metal End Caps
-            const endCapLeftGeo = new THREE.CylinderGeometry(1.22, 1.22, 0.08, 32);
-            const endCapLeft = new THREE.Mesh(endCapLeftGeo, chromeMat);
-            endCapLeft.rotation.z = Math.PI / 2;
-            endCapLeft.position.x = -capsuleLength / 2 - 0.02;
-            capsuleGroup.add(endCapLeft);
-
-            const endCapRight = endCapLeft.clone();
-            endCapRight.position.x = capsuleLength / 2 + 0.02;
-            capsuleGroup.add(endCapRight);
-
-            // ==========================================
-            // 2. INNER ROTATING DRUMS (HOURS, MINUTES, SECONDS)
-            // ==========================================
-            const drumRadius = 1.10;
-            const drumHeight = 1.35;
-
-            // Hour Drum (24 Hours)
-            const hoursTex = createDrumTexture(24);
-            const hourGeo = new THREE.CylinderGeometry(drumRadius, drumRadius, drumHeight, 64, 1, true);
-            const hourMat = new THREE.MeshStandardMaterial({
-                map: hoursTex,
-                roughness: 0.35,
-                metalness: 0.1
-            });
-            hourDrum = new THREE.Mesh(hourGeo, hourMat);
-            hourDrum.rotation.z = Math.PI / 2; // Axis aligned along X
-            hourDrum.position.x = -0.85;
+            // 1. INDEPENDENT ROLLING DRUMS
+            // Hours (left)
+            hourDrum = createRollingDrum(24, 0.52, 0.75, -0.95);
             capsuleGroup.add(hourDrum);
 
-            // Minute Drum (60 Minutes)
-            const minutesTex = createDrumTexture(60);
-            const minGeo = new THREE.CylinderGeometry(drumRadius, drumRadius, drumHeight, 64, 1, true);
-            const minMat = new THREE.MeshStandardMaterial({
-                map: minutesTex,
-                roughness: 0.35,
-                metalness: 0.1
-            });
-            minuteDrum = new THREE.Mesh(minGeo, minMat);
-            minuteDrum.rotation.z = Math.PI / 2;
-            minuteDrum.position.x = 0.85;
+            // Minutes (middle)
+            minuteDrum = createRollingDrum(60, 0.52, 0.75, 0.10);
             capsuleGroup.add(minuteDrum);
 
-            // Seconds Drum (Smaller Drum / Stacked offset)
-            const secondsTex = createDrumTexture(60);
-            const secGeo = new THREE.CylinderGeometry(drumRadius * 0.96, drumRadius * 0.96, drumHeight * 0.65, 64, 1, true);
-            const secMat = new THREE.MeshStandardMaterial({
-                map: secondsTex,
-                roughness: 0.35,
-                metalness: 0.1
-            });
-            secondDrum = new THREE.Mesh(secGeo, secMat);
-            secondDrum.rotation.z = Math.PI / 2;
-            secondDrum.position.x = 2.15; // Placed at right end of capsule
+            // Seconds (right, slightly smaller radius)
+            secondDrum = createRollingDrum(60, 0.40, 0.52, 1.05);
             capsuleGroup.add(secondDrum);
 
-            // ==========================================
-            // 3. INNER BRAND PLATE ("Capsula" Logo Text)
-            // ==========================================
-            const badgeCanvas = document.createElement('canvas');
-            badgeCanvas.width = 256;
-            badgeCanvas.height = 128;
-            const bCtx = badgeCanvas.getContext('2d');
-            bCtx.fillStyle = 'transparent';
-            bCtx.clearRect(0,0,256,128);
-            bCtx.fillStyle = '#222222';
-            bCtx.font = 'italic 500 48px Georgia, serif';
+            // Drum separation rings / end caps
+            const ringMat = new THREE.MeshStandardMaterial({ color: 0x22252a, metalness: 0.9, roughness: 0.2 });
+            const chromeMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.95, roughness: 0.1 });
+
+            const ringPositions = [-1.35, -0.55, -0.30, 0.50, 0.78, 1.32];
+            ringPositions.forEach(x => {
+                const ringGeo = new THREE.TorusGeometry(0.53, 0.012, 16, 64);
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                ring.position.x = x;
+                ring.rotation.y = Math.PI / 2;
+                ring.renderOrder = 3;
+                capsuleGroup.add(ring);
+            });
+
+            // 2. CENTRAL READING LINE & BRAND ENGRAVING
+            const lineGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(-1.45, 0, 0.56),
+                new THREE.Vector3(1.40, 0, 0.56)
+            ]);
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.4 });
+            const sightLine = new THREE.Line(lineGeo, lineMat);
+            sightLine.renderOrder = 4;
+            capsuleGroup.add(sightLine);
+
+            // "Capsula" Luxury Engraving on left
+            const brandCanvas = document.createElement('canvas');
+            brandCanvas.width = 256;
+            brandCanvas.height = 128;
+            const bCtx = brandCanvas.getContext('2d');
+            bCtx.clearRect(0, 0, 256, 128);
+            bCtx.fillStyle = '#1a1c22';
+            bCtx.font = 'italic 600 38px Georgia, serif';
             bCtx.textAlign = 'center';
             bCtx.textBaseline = 'middle';
             bCtx.fillText('Capsula', 128, 64);
 
-            const badgeTex = new THREE.CanvasTexture(badgeCanvas);
-            const badgeGeo = new THREE.PlaneGeometry(0.8, 0.4);
-            const badgeMat = new THREE.MeshBasicMaterial({ map: badgeTex, transparent: true, opacity: 0.85 });
-            const badgeMesh = new THREE.Mesh(badgeGeo, badgeMat);
-            badgeMesh.position.set(-2.15, 0, 0.05);
-            badgeMesh.rotation.y = 0;
-            capsuleGroup.add(badgeMesh);
+            const brandTex = new THREE.CanvasTexture(brandCanvas);
+            const brandGeo = new THREE.PlaneGeometry(0.48, 0.24);
+            const brandMat = new THREE.MeshBasicMaterial({ map: brandTex, transparent: true, opacity: 0.8 });
+            const brandMesh = new THREE.Mesh(brandGeo, brandMat);
+            brandMesh.position.set(-1.42, 0, 0.56);
+            brandMesh.renderOrder = 4;
+            capsuleGroup.add(brandMesh);
 
-            // Window Resize Handler
+            // 3. OUTER GLASS CAPSULE SHELL & SILHOUETTE RIM
+            const capsuleRadius = 0.70;
+            const capsuleLength = 3.6;
+
+            const glassGeo = createCapsuleGeometry(capsuleRadius, capsuleLength, 32, 64);
+            const glassMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.24,
+                roughness: 0.04,
+                metalness: 0.05,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.05,
+                transmission: 0.92,
+                thickness: 0.20,
+                ior: 1.48,
+                depthWrite: false
+            });
+
+            const glassCapsule = new THREE.Mesh(glassGeo, glassMat);
+            glassCapsule.renderOrder = 10;
+            glassCapsule.castShadow = true;
+            capsuleGroup.add(glassCapsule);
+
+            // Precision Outer Metallic Silhouette Rim Path (Traces top edge, right cap, bottom edge, left cap)
+            const halfL = capsuleLength / 2; // 1.8
+            const rimR = capsuleRadius + 0.012; // 0.712
+            const rimCurvePath = new THREE.CurvePath();
+
+            // Top straight edge
+            rimCurvePath.add(new THREE.LineCurve3(
+                new THREE.Vector3(-halfL, rimR, 0),
+                new THREE.Vector3(halfL, rimR, 0)
+            ));
+            // Right cap arc
+            const rightArc = new THREE.EllipseCurve(halfL, 0, rimR, rimR, Math.PI / 2, -Math.PI / 2, true);
+            const rightPts = rightArc.getPoints(32).map(p => new THREE.Vector3(p.x, p.y, 0));
+            for (let i = 0; i < rightPts.length - 1; i++) {
+                rimCurvePath.add(new THREE.LineCurve3(rightPts[i], rightPts[i + 1]));
+            }
+            // Bottom straight edge
+            rimCurvePath.add(new THREE.LineCurve3(
+                new THREE.Vector3(halfL, -rimR, 0),
+                new THREE.Vector3(-halfL, -rimR, 0)
+            ));
+            // Left cap arc
+            const leftArc = new THREE.EllipseCurve(-halfL, 0, rimR, rimR, -Math.PI / 2, -3 * Math.PI / 2, true);
+            const leftPts = leftArc.getPoints(32).map(p => new THREE.Vector3(p.x, p.y, 0));
+            for (let i = 0; i < leftPts.length - 1; i++) {
+                rimCurvePath.add(new THREE.LineCurve3(leftPts[i], leftPts[i + 1]));
+            }
+
+            const rimTubeGeo = new THREE.TubeGeometry(rimCurvePath, 128, 0.014, 12, true);
+            const rimMat = new THREE.MeshStandardMaterial({
+                color: 0x303238,
+                metalness: 0.85,
+                roughness: 0.20,
+                transparent: true,
+                opacity: 0.78
+            });
+
+            const silhouetteRim = new THREE.Mesh(rimTubeGeo, rimMat);
+            silhouetteRim.renderOrder = 11;
+            capsuleGroup.add(silhouetteRim);
+
+            // End Seam Rings around Left and Right rounded caps
+            const endCapRingGeo = new THREE.TorusGeometry(capsuleRadius + 0.005, 0.016, 16, 64);
+            const leftEndRing = new THREE.Mesh(endCapRingGeo, rimMat);
+            leftEndRing.position.x = -halfL;
+            leftEndRing.rotation.y = Math.PI / 2;
+            leftEndRing.renderOrder = 11;
+            capsuleGroup.add(leftEndRing);
+
+            const rightEndRing = new THREE.Mesh(endCapRingGeo, rimMat);
+            rightEndRing.position.x = halfL;
+            rightEndRing.rotation.y = Math.PI / 2;
+            rightEndRing.renderOrder = 11;
+            capsuleGroup.add(rightEndRing);
+
+            // Outer Center Chrome Ring
+            const centerRingGeo = new THREE.TorusGeometry(capsuleRadius, 0.015, 16, 96);
+            const centerRing = new THREE.Mesh(centerRingGeo, chromeMat);
+            centerRing.rotation.y = Math.PI / 2;
+            centerRing.renderOrder = 12;
+            capsuleGroup.add(centerRing);
+
+            // Event Listeners
             window.addEventListener('resize', onWindowResize);
-
-            // Mouse Interaction Handlers for Parallax & Tap
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mousedown', onMouseDown);
             window.addEventListener('mouseup', () => isMouseDown = false);
-            
-            // Touch handlers
             window.addEventListener('touchmove', onTouchMove, { passive: true });
         }
 
@@ -618,7 +691,6 @@
         }
 
         function onMouseDown(e) {
-            // Trigger tap reaction if clicking capsule canvas
             if (e.target.tagName.toLowerCase() === 'canvas') {
                 isMouseDown = true;
                 previousMouseX = e.clientX;
@@ -630,37 +702,40 @@
         }
 
         function updateTime() {
-            // Compute real GMT+7 time regardless of client's local computer clock timezone setting
             const now = new Date();
             const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            const gmt7 = new Date(utc + (3600000 * 7)); // GMT+7 offset
+            const gmt7 = new Date(utc + (3600000 * 7));
 
             const hours = gmt7.getHours();
             const minutes = gmt7.getMinutes();
             const seconds = gmt7.getSeconds();
             const milliseconds = gmt7.getMilliseconds();
 
-            // Update digital clock footer timestamp display
+            // Footer Digital Clock readout
             const hh = String(hours).padStart(2, '0');
             const mm = String(minutes).padStart(2, '0');
             const ss = String(seconds).padStart(2, '0');
             const mss = String(milliseconds).padStart(3, '0');
             document.getElementById('timestamp-digital').innerText = `${hh} : ${mm} : ${ss}.${mss} GMT+7`;
 
-            // Continuous rotational target calculation
-            // Rotation is around cylinder's central Y-axis (which is rotated along X axis of world)
-            const targetH = (hours / 24) * Math.PI * 2 + (minutes / (24 * 60)) * Math.PI * 2;
-            const targetM = (minutes / 60) * Math.PI * 2 + (seconds / (60 * 60)) * Math.PI * 2;
-            const targetS = (seconds / 60) * Math.PI * 2 + (milliseconds / (60 * 1000)) * Math.PI * 2;
+            // Continuous float values for kinetic drum reels
+            const secVal = seconds + milliseconds / 1000;
+            const minVal = minutes + secVal / 60;
+            const hourVal = hours + minVal / 60;
 
-            // Smooth Interpolation physics (LERP)
-            currentRotH += (targetH - currentRotH) * 0.1;
-            currentRotM += (targetM - currentRotM) * 0.1;
-            currentRotS += (targetS - currentRotS) * 0.15;
+            // Target rotational angles around X-axis
+            const targetRotS = (secVal / 60) * Math.PI * 2;
+            const targetRotM = (minVal / 60) * Math.PI * 2;
+            const targetRotH = (hourVal / 24) * Math.PI * 2;
 
-            if (hourDrum) hourDrum.rotation.y = currentRotH;
-            if (minuteDrum) minuteDrum.rotation.y = currentRotM;
-            if (secondDrum) secondDrum.rotation.y = currentRotS;
+            // Shortest-path angular interpolation
+            currentRotS += shortestAngleDifference(targetRotS, currentRotS) * 0.18;
+            currentRotM += shortestAngleDifference(targetRotM, currentRotM) * 0.10;
+            currentRotH += shortestAngleDifference(targetRotH, currentRotH) * 0.08;
+
+            if (secondDrum) secondDrum.rotation.x = currentRotS;
+            if (minuteDrum) minuteDrum.rotation.x = currentRotM;
+            if (hourDrum) hourDrum.rotation.x = currentRotH;
         }
 
         function animate() {
@@ -668,7 +743,6 @@
 
             updateTime();
 
-            // Parallax subtle float physics
             if (!isMouseDown) {
                 targetCameraRotY = mouseX * 0.15;
                 targetCameraRotX = mouseY * 0.12;
@@ -676,14 +750,13 @@
                 capsuleGroup.rotation.y += (targetCameraRotY - capsuleGroup.rotation.y) * 0.05;
                 capsuleGroup.rotation.x += (targetCameraRotX - capsuleGroup.rotation.x) * 0.05;
 
-                // Subtle floating wave animation
-                capsuleGroup.position.y = Math.sin(Date.now() * 0.0015) * 0.08;
+                // Subtle levitation bounce
+                capsuleGroup.position.y = Math.sin(Date.now() * 0.0015) * 0.06;
             }
 
             renderer.render(scene, camera);
         }
 
-        // Start 3D environment on window load
         window.onload = function() {
             init3D();
             animate();
