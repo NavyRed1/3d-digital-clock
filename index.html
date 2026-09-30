@@ -8,12 +8,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
             overflow: hidden;
-            background: radial-gradient(circle at 42% 50%, #161820 0%, #0c0d10 68%, #050607 100%);
+            background: radial-gradient(
+                ellipse at 43% 50%,
+                #202227 0%,
+                #17191e 28%,
+                #0d0f13 58%,
+                #050607 100%
+            );
         }
         .mono-font {
             font-family: 'JetBrains Mono', monospace;
@@ -59,10 +66,8 @@
 </head>
 <body class="h-full w-full relative overflow-hidden flex flex-col justify-between p-6 sm:p-10">
 
-    <!-- 3D WebGL Canvas Layer -->
     <div id="canvas-container" class="absolute inset-0 z-0 cursor-grab active:cursor-grabbing"></div>
 
-    <!-- TOP / LEFT OVERLAY HEADER -->
     <header class="relative z-10 flex justify-between items-start w-full pointer-events-none">
         <div class="pointer-events-auto">
             <div class="text-[11px] tracking-widest text-zinc-400 uppercase font-mono mb-1 flex items-center gap-2">
@@ -75,7 +80,7 @@
                     <span class="font-extralight text-zinc-400">SPIN</span>
                 </h1>
                 <div class="text-[10px] tracking-[0.25em] text-zinc-500 uppercase mt-2 font-mono">
-                    CHRONO-CAPSULE MK-IV • GMT+7 WIB MASTER CLOCK
+                    CHRONO-CAPSULE MK-V • GMT+7 WIB MASTER CLOCK
                 </div>
             </div>
         </div>
@@ -86,7 +91,6 @@
         </div>
     </header>
 
-    <!-- REAL-TIME REJECTION TOAST MODAL -->
     <div id="denial-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none opacity-0 scale-95 transition-all duration-300 w-[90%] max-w-md">
         <div class="glass-panel p-5 rounded-2xl border border-red-500/30 shadow-2xl bg-zinc-950/90 text-left backdrop-blur-2xl">
             <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
@@ -106,7 +110,6 @@
         </div>
     </div>
 
-    <!-- RIGHT SIDEBAR CONTROLS (PARODY OF HIGH-END DESIGN TOOLS) -->
     <div class="fixed right-6 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col gap-5 w-64 glass-panel p-6 rounded-3xl border border-white/10 shadow-2xl">
         
         <!-- Action Buttons -->
@@ -181,7 +184,6 @@
         </div>
     </div>
 
-    <!-- FOOTER / DIAGNOSTICS LOG BAR -->
     <footer class="relative z-10 w-full flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-zinc-900 text-xs font-mono text-zinc-500 pointer-events-auto">
         <div class="flex items-center gap-4">
             <span class="flex items-center gap-1.5 text-zinc-300">
@@ -208,7 +210,6 @@
         </div>
     </footer>
 
-    <!-- DIAGNOSTICS POPUP DRAWER -->
     <div id="diagnostics-drawer" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-xl p-6 rounded-3xl border border-zinc-800 text-left space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
@@ -221,15 +222,15 @@
             <div class="space-y-3 font-mono text-xs text-zinc-400 max-h-80 overflow-y-auto pr-2">
                 <div class="p-3 bg-zinc-950/60 rounded-xl border border-zinc-900 space-y-1">
                     <div class="text-zinc-300 font-semibold">Capsula Spin Architecture Specification</div>
-                    <p class="text-zinc-500 text-[11px]">Model: Kinetic Drum Master Clock (Rev 5.0 Precision UV)</p>
+                    <p class="text-zinc-500 text-[11px]">Model: 3-Layer Kinetic Chronometer (Rev 6.0 Studio Refraction)</p>
                     <p class="text-zinc-500 text-[11px]">Timezone Constraint: Locked to UTC+7 (WIB Zone)</p>
-                    <p class="text-zinc-500 text-[11px]">Customization Kernel: Hardcoded READ-ONLY memory</p>
+                    <p class="text-zinc-500 text-[11px]">Interior Surface: Matte Gray Internal Backing Capsule (#73767B)</p>
                 </div>
                 <div class="space-y-1">
-                    <div class="flex justify-between"><span>3D Drum Engine Rendering:</span><span class="text-emerald-400">WebGL 2.0 (Physical Glass Refraction)</span></div>
-                    <div class="flex justify-between"><span>Physical Refraction IOR:</span><span class="text-zinc-200">1.48 (High-Purity Quartz Shell)</span></div>
-                    <div class="flex justify-between"><span>Drum Mapping Alignment:</span><span class="text-zinc-200">1024x4096 Upright UV Axis</span></div>
-                    <div class="flex justify-between"><span>User Option Rejection Rate:</span><span class="text-red-400">100.00%</span></div>
+                    <div class="flex justify-between"><span>3D Engine Architecture:</span><span class="text-emerald-400">WebGL 2.0 (Dual-Layer Glass Physical Refraction)</span></div>
+                    <div class="flex justify-between"><span>Glass Optical IOR:</span><span class="text-zinc-200">1.48 (High-Purity Quartz Shell)</span></div>
+                    <div class="flex justify-between"><span>Inner Gray Backing Surface:</span><span class="text-zinc-200">Enabled (0.60 Radius Matte Body)</span></div>
+                    <div class="flex justify-between"><span>User Customization Freedom:</span><span class="text-red-400">0.00%</span></div>
                 </div>
                 <div class="p-3 bg-red-950/30 border border-red-900/40 rounded-xl text-red-300 text-[11px] leading-relaxed">
                     <strong>NOTICE TO USER:</strong> All buttons on this website are decorative. Attempts to adjust size, digit color, rotation, or seconds display are routed to the central Null void. Please enjoy the absolute perfection of uncustomizable time.
@@ -243,7 +244,6 @@
         </div>
     </div>
 
-    <!-- AUDIO CONTROLLER -->
     <script>
         class ChronoAudioEngine {
             constructor() {
@@ -341,7 +341,6 @@
         }
     </script>
 
-    <!-- 3D WEBGL GRAPHICS SYSTEM -->
     <script>
         let scene, camera, renderer;
         let capsuleGroup, hourDrum, minuteDrum, secondDrum;
@@ -351,33 +350,33 @@
         let targetCameraRotX = 0, targetCameraRotY = 0;
         let isMouseDown = false, previousMouseX = 0, previousMouseY = 0;
 
-        function createDrumTexture(count) {
+        function createDrumTexture(count, isSeconds = false) {
             const canvas = document.createElement('canvas');
             canvas.width = 1024;
             canvas.height = 4096;
             const ctx = canvas.getContext('2d');
 
-            // Bright matte drum reel surface for maximum contrast
-            ctx.fillStyle = '#e8ecef';
+            // Light gray drum reel strip to blend with gray interior backing
+            ctx.fillStyle = '#dcdfe3';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             const bandHeight = canvas.height / count;
-            // Scale font size to occupy ~78% of the available drum slot height
-            const fontSize = Math.floor(bandHeight * 0.78);
+            const fontScale = isSeconds ? 1.20 : 1.35;
+            const fontSize = Math.floor(bandHeight * fontScale);
 
             for (let i = 0; i < count; i++) {
                 const yTop = i * bandHeight;
                 const yCenter = yTop + bandHeight / 2;
 
                 // Subtle slot separator tick lines
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.09)';
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
                 ctx.lineWidth = 4;
                 ctx.beginPath();
                 ctx.moveTo(0, yTop);
                 ctx.lineTo(canvas.width, yTop);
                 ctx.stroke();
 
-                // Draw bold, near-black, highly legible digit
+                // Draw crisp, dark black digit (#050505)
                 const numStr = String(i).padStart(2, '0');
                 ctx.fillStyle = '#050505';
                 ctx.font = `900 ${fontSize}px "JetBrains Mono", "Inter", sans-serif`;
@@ -397,11 +396,9 @@
         function fixCylinderUVs(geometry) {
             const uvs = geometry.attributes.uv;
             for (let i = 0; i < uvs.count; i++) {
-                const u = uvs.getX(i); // Circumference theta (0..1)
-                const v = uvs.getY(i); // Cylinder height (-length/2..+length/2 mapped 0..1)
+                const u = uvs.getX(i);
+                const v = uvs.getY(i);
 
-                // Map drum length along X to texture X (U)
-                // Map drum circumference around X to texture Y (V)
                 const uNew = v;
                 const vNew = 1.0 - u;
 
@@ -427,25 +424,26 @@
             }
 
             const geometry = new THREE.LatheGeometry(points, radialSegments);
-            geometry.rotateZ(Math.PI / 2); // Lay capsule horizontally along X axis
+            geometry.rotateZ(Math.PI / 2); // Orient horizontal along X axis
             return geometry;
         }
 
-        function createRollingDrum(count, radius, width, xPosition) {
+        function createRollingDrum(count, radius, width, xPosition, isSeconds = false) {
             const geometry = new THREE.CylinderGeometry(radius, radius, width, 128, 1, true);
             geometry.rotateZ(-Math.PI / 2);
             fixCylinderUVs(geometry);
 
-            const texture = createDrumTexture(count);
+            const texture = createDrumTexture(count, isSeconds);
             const material = new THREE.MeshStandardMaterial({
                 map: texture,
-                roughness: 0.28,
-                metalness: 0.08
+                roughness: 0.32,
+                metalness: 0.05
             });
 
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.x = xPosition;
-            mesh.renderOrder = 2;
+            mesh.position.z = 0.08; // Shift forward in front of gray interior body
+            mesh.renderOrder = 4;
             return mesh;
         }
 
@@ -460,7 +458,7 @@
             const container = document.getElementById('canvas-container');
 
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x0c0d10, 0.032);
+            scene.fog = new THREE.FogExp2(0x0d0f13, 0.032);
 
             camera = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerHeight, 0.1, 100);
             camera.position.set(0, 0, 7.3);
@@ -474,30 +472,30 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(renderer.domElement);
 
-            // Lighting setup - Enhanced key & rim lights for edge specular reflections
-            const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+            // Studio Lighting System — Designed specifically to catch glass edges & highlight dark digits
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
             scene.add(ambientLight);
 
-            const keyLight = new THREE.SpotLight(0xffffff, 4.5);
-            keyLight.position.set(5, 7, 7);
-            keyLight.angle = 0.55;
-            keyLight.penumbra = 0.8;
+            const keyLight = new THREE.SpotLight(0xffffff, 3.0);
+            keyLight.position.set(6, 8, 8);
+            keyLight.angle = 0.5;
+            keyLight.penumbra = 0.7;
             keyLight.castShadow = true;
             scene.add(keyLight);
 
-            const fillLight = new THREE.DirectionalLight(0xcfd8dc, 1.4);
-            fillLight.position.set(-5, -2, 3);
+            const fillLight = new THREE.DirectionalLight(0xa3b1c2, 1.2);
+            fillLight.position.set(-6, -2, 4);
             scene.add(fillLight);
 
-            const topLight = new THREE.DirectionalLight(0xffffff, 2.8);
-            topLight.position.set(0, 7, 1);
+            const topLight = new THREE.DirectionalLight(0xffffff, 2.1);
+            topLight.position.set(0, 8, 2);
             scene.add(topLight);
 
-            const rimLight = new THREE.DirectionalLight(0xb0bec5, 2.2);
-            rimLight.position.set(0, -2, -6);
+            const rimLight = new THREE.DirectionalLight(0x8fa3b8, 2.4);
+            rimLight.position.set(0, -3, -7);
             scene.add(rimLight);
 
-            // Ground Shadow Receiver
+            // Ground Shadow Plane
             const shadowPlaneGeo = new THREE.PlaneGeometry(30, 30);
             const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.32 });
             const shadowPlane = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat);
@@ -507,81 +505,109 @@
             scene.add(shadowPlane);
 
             capsuleGroup = new THREE.Group();
-            capsuleGroup.position.x = -0.35; // Position slightly left to balance UI controls
+            capsuleGroup.position.x = -0.35; // Position slightly left to balance right controls
             scene.add(capsuleGroup);
 
-            // 1. INDEPENDENT ROLLING DRUMS
-            // Hours (left)
+            /* =========================================================
+               LAYER 1: INNER GRAY CAPSULE BODY (#73767B)
+               ========================================================= */
+            const innerGeo = createCapsuleGeometry(0.46, 3.40, 32, 64);
+            const innerMat = new THREE.MeshPhysicalMaterial({
+                color: 0x73767b,
+                roughness: 0.58,
+                metalness: 0.05,
+                clearcoat: 0.20,
+                clearcoatRoughness: 0.25
+            });
+            const innerBody = new THREE.Mesh(innerGeo, innerMat);
+            innerBody.renderOrder = 1;
+            capsuleGroup.add(innerBody);
+
+            /* =========================================================
+               LAYER 2: ROLLING TIME DRUMS & INTERNAL STRUCTURES
+               ========================================================= */
+            // Hours drum (left)
             hourDrum = createRollingDrum(24, 0.52, 0.75, -0.95);
             capsuleGroup.add(hourDrum);
 
-            // Minutes (middle)
+            // Minutes drum (middle)
             minuteDrum = createRollingDrum(60, 0.52, 0.75, 0.10);
             capsuleGroup.add(minuteDrum);
 
-            // Seconds (right, slightly smaller radius)
-            secondDrum = createRollingDrum(60, 0.40, 0.52, 1.05);
+            // Seconds drum (right, slightly smaller radius)
+            secondDrum = createRollingDrum(60, 0.40, 0.52, 1.05, true);
             capsuleGroup.add(secondDrum);
 
-            // Drum separation rings / end caps
-            const ringMat = new THREE.MeshStandardMaterial({ color: 0x22252a, metalness: 0.9, roughness: 0.2 });
-            const chromeMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.95, roughness: 0.1 });
+            // Thin internal structural center ring (#55585D)
+            const centerRingGeo = new THREE.TorusGeometry(0.605, 0.012, 16, 96);
+            const centerRingMat = new THREE.MeshStandardMaterial({
+                color: 0x55585d,
+                metalness: 0.65,
+                roughness: 0.20,
+                transparent: true,
+                opacity: 0.65
+            });
+            const centerRing = new THREE.Mesh(centerRingGeo, centerRingMat);
+            centerRing.rotation.y = Math.PI / 2;
+            centerRing.renderOrder = 3;
+            capsuleGroup.add(centerRing);
 
-            const ringPositions = [-1.35, -0.55, -0.30, 0.50, 0.78, 1.32];
-            ringPositions.forEach(x => {
-                const ringGeo = new THREE.TorusGeometry(0.53, 0.012, 16, 64);
-                const ring = new THREE.Mesh(ringGeo, ringMat);
+            // Subtle drum separation rings
+            const drumRingMat = new THREE.MeshStandardMaterial({
+                color: 0x4a4d52,
+                metalness: 0.5,
+                roughness: 0.3,
+                transparent: true,
+                opacity: 0.5
+            });
+            [-0.52, 0.72].forEach(x => {
+                const ringGeo = new THREE.TorusGeometry(0.53, 0.008, 16, 64);
+                const ring = new THREE.Mesh(ringGeo, drumRingMat);
                 ring.position.x = x;
+                ring.position.z = 0.08;
                 ring.rotation.y = Math.PI / 2;
-                ring.renderOrder = 3;
+                ring.renderOrder = 5;
                 capsuleGroup.add(ring);
             });
 
-            // 2. CENTRAL READING LINE & BRAND ENGRAVING
-            const lineGeo = new THREE.BufferGeometry().setFromPoints([
-                new THREE.Vector3(-1.45, 0, 0.56),
-                new THREE.Vector3(1.40, 0, 0.56)
-            ]);
-            const lineMat = new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.4 });
-            const sightLine = new THREE.Line(lineGeo, lineMat);
-            sightLine.renderOrder = 4;
-            capsuleGroup.add(sightLine);
-
-            // "Capsula" Luxury Engraving on left
+            // Luxury "Capsula" Watch Engraving on left gray backing surface
             const brandCanvas = document.createElement('canvas');
             brandCanvas.width = 256;
             brandCanvas.height = 128;
             const bCtx = brandCanvas.getContext('2d');
             bCtx.clearRect(0, 0, 256, 128);
-            bCtx.fillStyle = '#1a1c22';
-            bCtx.font = 'italic 600 38px Georgia, serif';
+            bCtx.fillStyle = '#22252a';
+            bCtx.font = 'italic 600 36px Georgia, serif';
             bCtx.textAlign = 'center';
             bCtx.textBaseline = 'middle';
             bCtx.fillText('Capsula', 128, 64);
 
             const brandTex = new THREE.CanvasTexture(brandCanvas);
             const brandGeo = new THREE.PlaneGeometry(0.48, 0.24);
-            const brandMat = new THREE.MeshBasicMaterial({ map: brandTex, transparent: true, opacity: 0.8 });
+            const brandMat = new THREE.MeshBasicMaterial({ map: brandTex, transparent: true, opacity: 0.75 });
             const brandMesh = new THREE.Mesh(brandGeo, brandMat);
-            brandMesh.position.set(-1.42, 0, 0.56);
-            brandMesh.renderOrder = 4;
+            brandMesh.position.set(-1.42, 0, 0.59);
+            brandMesh.renderOrder = 5;
             capsuleGroup.add(brandMesh);
 
-            // 3. OUTER GLASS CAPSULE SHELL & SILHOUETTE RIM
+            /* =========================================================
+               LAYER 3: TRANSPARENT DUAL-LAYER GLASS CAPSULE SHELL
+               ========================================================= */
             const capsuleRadius = 0.70;
-            const capsuleLength = 3.6;
+            const capsuleLength = 3.60;
 
+            // Primary Glass Capsule
             const glassGeo = createCapsuleGeometry(capsuleRadius, capsuleLength, 32, 64);
             const glassMat = new THREE.MeshPhysicalMaterial({
                 color: 0xffffff,
                 transparent: true,
-                opacity: 0.24,
+                opacity: 0.22,
                 roughness: 0.04,
-                metalness: 0.05,
+                metalness: 0.0,
                 clearcoat: 1.0,
-                clearcoatRoughness: 0.05,
-                transmission: 0.92,
-                thickness: 0.20,
+                clearcoatRoughness: 0.04,
+                transmission: 0.95,
+                thickness: 0.25,
                 ior: 1.48,
                 depthWrite: false
             });
@@ -591,67 +617,51 @@
             glassCapsule.castShadow = true;
             capsuleGroup.add(glassCapsule);
 
-            // Precision Outer Metallic Silhouette Rim Path (Traces top edge, right cap, bottom edge, left cap)
-            const halfL = capsuleLength / 2; // 1.8
-            const rimR = capsuleRadius + 0.012; // 0.712
-            const rimCurvePath = new THREE.CurvePath();
-
-            // Top straight edge
-            rimCurvePath.add(new THREE.LineCurve3(
-                new THREE.Vector3(-halfL, rimR, 0),
-                new THREE.Vector3(halfL, rimR, 0)
-            ));
-            // Right cap arc
-            const rightArc = new THREE.EllipseCurve(halfL, 0, rimR, rimR, Math.PI / 2, -Math.PI / 2, true);
-            const rightPts = rightArc.getPoints(32).map(p => new THREE.Vector3(p.x, p.y, 0));
-            for (let i = 0; i < rightPts.length - 1; i++) {
-                rimCurvePath.add(new THREE.LineCurve3(rightPts[i], rightPts[i + 1]));
-            }
-            // Bottom straight edge
-            rimCurvePath.add(new THREE.LineCurve3(
-                new THREE.Vector3(halfL, -rimR, 0),
-                new THREE.Vector3(-halfL, -rimR, 0)
-            ));
-            // Left cap arc
-            const leftArc = new THREE.EllipseCurve(-halfL, 0, rimR, rimR, -Math.PI / 2, -3 * Math.PI / 2, true);
-            const leftPts = leftArc.getPoints(32).map(p => new THREE.Vector3(p.x, p.y, 0));
-            for (let i = 0; i < leftPts.length - 1; i++) {
-                rimCurvePath.add(new THREE.LineCurve3(leftPts[i], leftPts[i + 1]));
-            }
-
-            const rimTubeGeo = new THREE.TubeGeometry(rimCurvePath, 128, 0.014, 12, true);
-            const rimMat = new THREE.MeshStandardMaterial({
-                color: 0x303238,
-                metalness: 0.85,
-                roughness: 0.20,
+            // Secondary Glass Silhouette Shell (Perimeter Refraction Layer)
+            const outerGlassGeo = createCapsuleGeometry(0.712, 3.62, 32, 64);
+            const outerGlassMat = new THREE.MeshPhysicalMaterial({
+                color: 0x8f969e,
                 transparent: true,
-                opacity: 0.78
+                opacity: 0.22,
+                roughness: 0.05,
+                metalness: 0.0,
+                transmission: 0.88,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.04,
+                depthWrite: false
             });
+            const outerGlassShell = new THREE.Mesh(outerGlassGeo, outerGlassMat);
+            outerGlassShell.renderOrder = 11;
+            capsuleGroup.add(outerGlassShell);
 
-            const silhouetteRim = new THREE.Mesh(rimTubeGeo, rimMat);
-            silhouetteRim.renderOrder = 11;
-            capsuleGroup.add(silhouetteRim);
+            // Subtle Glass Optical Specular Edge Curves (Top & Bottom Highlights)
+            const topCurve = new THREE.LineCurve3(
+                new THREE.Vector3(-1.70, 0.712, 0.05),
+                new THREE.Vector3(1.70, 0.712, 0.05)
+            );
+            const topHighlightGeo = new THREE.TubeGeometry(topCurve, 64, 0.008, 8, false);
+            const topHighlightMat = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.28
+            });
+            const topHighlight = new THREE.Mesh(topHighlightGeo, topHighlightMat);
+            topHighlight.renderOrder = 12;
+            capsuleGroup.add(topHighlight);
 
-            // End Seam Rings around Left and Right rounded caps
-            const endCapRingGeo = new THREE.TorusGeometry(capsuleRadius + 0.005, 0.016, 16, 64);
-            const leftEndRing = new THREE.Mesh(endCapRingGeo, rimMat);
-            leftEndRing.position.x = -halfL;
-            leftEndRing.rotation.y = Math.PI / 2;
-            leftEndRing.renderOrder = 11;
-            capsuleGroup.add(leftEndRing);
-
-            const rightEndRing = new THREE.Mesh(endCapRingGeo, rimMat);
-            rightEndRing.position.x = halfL;
-            rightEndRing.rotation.y = Math.PI / 2;
-            rightEndRing.renderOrder = 11;
-            capsuleGroup.add(rightEndRing);
-
-            // Outer Center Chrome Ring
-            const centerRingGeo = new THREE.TorusGeometry(capsuleRadius, 0.015, 16, 96);
-            const centerRing = new THREE.Mesh(centerRingGeo, chromeMat);
-            centerRing.rotation.y = Math.PI / 2;
-            centerRing.renderOrder = 12;
-            capsuleGroup.add(centerRing);
+            const bottomCurve = new THREE.LineCurve3(
+                new THREE.Vector3(-1.70, -0.712, 0.05),
+                new THREE.Vector3(1.70, -0.712, 0.05)
+            );
+            const bottomHighlightGeo = new THREE.TubeGeometry(bottomCurve, 64, 0.006, 8, false);
+            const bottomHighlightMat = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.15
+            });
+            const bottomHighlight = new THREE.Mesh(bottomHighlightGeo, bottomHighlightMat);
+            bottomHighlight.renderOrder = 12;
+            capsuleGroup.add(bottomHighlight);
 
             // Event Listeners
             window.addEventListener('resize', onWindowResize);
@@ -711,7 +721,7 @@
             const seconds = gmt7.getSeconds();
             const milliseconds = gmt7.getMilliseconds();
 
-            // Footer Digital Clock readout
+            // Footer Digital Clock Readout
             const hh = String(hours).padStart(2, '0');
             const mm = String(minutes).padStart(2, '0');
             const ss = String(seconds).padStart(2, '0');
